@@ -5,7 +5,7 @@ from app.services.note_service import create_note, get_note, delete_note
 
 router = APIRouter()
 
-@router.post('/notes', response_model=NoteResponse)
+@router.post('/notes', response_model=NoteResponse, status_code=201)
 def add_note(note: NoteCreate):
     new_note = create_note(note)
 

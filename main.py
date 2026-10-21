@@ -1,3 +1,5 @@
+#uvicorn main:app --reload
+
 from fastapi import FastAPI
 from app.routes.note_router import router as note_router
 
