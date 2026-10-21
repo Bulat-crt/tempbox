@@ -27,7 +27,7 @@ This project was built to practice Python, FastAPI, and Redis.
 ### 1. Clone the repository
 
 ```bash
-git clone <YOUR_REPOSITORY_URL>
+git clone https://github.com/Bulat-crt/tempbox.git
 cd TempBox
 ```
 
