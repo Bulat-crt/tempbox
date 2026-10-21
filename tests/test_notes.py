@@ -1,5 +1,6 @@
 from fastapi.testclient import TestClient
 import time
+import pytest
 
 def test_create_note(client: TestClient):
     response = client.post(
@@ -84,6 +85,12 @@ def test_delete_note(client):
 
     assert third_response.status_code == 404
 
+    fourth_response = client.get(
+        f'/notes/{key}'
+    )
+
+    assert fourth_response.status_code == 404
+
 
 
 def test_delete_404_note(client):
@@ -94,39 +101,6 @@ def test_delete_404_note(client):
 
     assert response.status_code == 404
 
-
-def test_null_ttl(client):
-    response = client.post(
-        '/notes',
-        json={
-            'text': 'Записка 1',
-            'ttl_seconds': 0
-        }
-    )
-
-    assert response.status_code == 422
-
-
-def test_minus_ttl(client):
-    response = client.post(
-        '/notes',
-        json={
-            'text': 'Записка 1',
-            'ttl_seconds': -5
-        }
-    )
-
-    assert response.status_code == 422
-
-def test_something_is_none(client):
-    response = client.post(
-        '/notes',
-        json={
-            'text': 'Записка 1'
-        }
-    )
-
-    assert response.status_code == 422
 
 
 def test_time_exited(client):
@@ -143,7 +117,7 @@ def test_time_exited(client):
     data = response.json()
     key = data['key']
 
-    time.sleep(1)
+    time.sleep(1.2)
 
     second_response = client.get(
         f'/notes/{key}'
@@ -184,6 +158,8 @@ def test_create_two_notes(client):
         f'/notes/{first_key}'
     )
 
+    assert third_response.status_code == 200
+
     third_data = third_response.json()
     first_text = third_data['text']
 
@@ -191,7 +167,42 @@ def test_create_two_notes(client):
         f'/notes/{second_key}'
     )
 
+    assert fourth_response.status_code == 200
+
     fourth_data = fourth_response.json()
     second_text = fourth_data['text']
 
     assert first_text != second_text
+    assert first_text == 'Заметка 1'
+    assert second_text == 'Заметка 2'
+
+@pytest.mark.parametrize(
+    'ttl_seconds',
+    [0, -5]
+)
+def test_check_minus_and_zero_ttl(client, ttl_seconds):
+    first_response = client.post(
+        '/notes',
+        json={
+            'text': 'Заметка 1',
+            'ttl_seconds': ttl_seconds
+        }
+    )
+
+    assert first_response.status_code == 422
+
+
+@pytest.mark.parametrize(
+    'payload',
+    [
+        ({'text': 'Заметка 1'}),
+        ({'ttl_seconds': 30})
+    ]
+)
+def test_check_create_note_without_text_or_ttl(client, payload):
+    response = client.post(
+        '/notes',
+        json=payload
+    )
+
+    assert response.status_code == 422

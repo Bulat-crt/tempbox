@@ -12,25 +12,10 @@ def add_note(note: NoteCreate):
     return new_note
 
 @router.get('/notes/{key}', response_model=NoteDetail)
-def get_note_by_key(key: str):
-    try:
-       note = get_note(key)
-    except NoteNotFoundError:
-        raise HTTPException(
-            status_code=404,
-            detail='Нет такой заметки'
-        )
-
-    return note
+def get_note_by_key(key: str):    
+    return get_note(key)
+    
 
 @router.delete('/notes/{key}', status_code=204)
 def delete_note_by_key(key: str):
-    try:
-        delete_note(key)
-    except NoteNotFoundError:
-        raise HTTPException(
-            status_code=404,
-            detail='Нет такой записи'
-        )
-
-    return True
+    delete_note(key)
