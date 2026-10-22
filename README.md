@@ -28,7 +28,7 @@ This project was built to practice Python, FastAPI, and Redis.
 
 ```bash
 git clone https://github.com/Bulat-crt/tempbox.git
-cd TempBox
+cd tempbox
 ```
 
 ### 2. Create a virtual environment
